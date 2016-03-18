@@ -52,6 +52,8 @@ paths:
       tags:
         - Greeting
       operationId: appbone-service-template.api/greeting*post
+      consumes:
+        - application/json
       produces:
         - application/json
       parameters:

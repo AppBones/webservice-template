@@ -1,8 +1,9 @@
 (ns appbone-service-template.middleware
-  (:require [liberator.dev :refer [wrap-trace]]))
+  (:require [environ.core :refer [env]]
+            [liberator.dev :refer [wrap-trace]]))
 
 (defn wrap-liberator-trace
-  "Conditionally wrap handler with liberator trace enabled if running locally.
+  "Conditionally wrap handler with liberator trace enabled if running in dev profile.
 
   This will append X-Liberator header to all responses for the purposes of debugging
   the decision tree. Additionally, debug information will be made available at
@@ -12,6 +13,6 @@
   "
   [handler]
   (fn [request]
-    (if (= (:server-name request) "localhost")
+    (if (env :is-dev)
       ((wrap-trace handler :header :ui) request)
       (handler request))))

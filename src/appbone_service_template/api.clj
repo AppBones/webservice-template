@@ -2,7 +2,7 @@
   (:require [clojure.data.json :as json]
             [ring.util.response :as r]
             [liberator.core :refer [resource]]
-            [appbone-service-template.db :refer [inc-counter]]))
+            [appbone-service-template.db :as db]))
 
 (defn parse-json [ctx key]
   "When ctx has verb PUT or POST, try to parse body as json and store it in ctx."
@@ -30,11 +30,22 @@
   [request db]
   (let [name (get-in request [:parameters :query :name])
         message (str "Hello " name "!")]
-    (assoc {:name name :message message} :counter (inc-counter db))))
+    (assoc {:name name :message message} :counter (db/inc-counter db))))
+
+(defn post-greeting
+  [request db]
+  (let [name (get-in request [:parameters :body :greeting :name])
+        message (str "Hello" name "!")
+        id (db/inc-counter db)]
+    (db/add-greeting db { :name name :message message :counter id })))
 
 (defn greeting [req db]
   (let [handler
         (resource
+         :allowed-methods [:post :get]
          :available-media-types ["application/json"]
+         :known-content-type? (check-content-type req ["application/json"])
+         :malformed? (parse-json req :data)
+         :post! (post-greeting req db)
          :handle-ok (create-greeting req db))]
     (handler req)))

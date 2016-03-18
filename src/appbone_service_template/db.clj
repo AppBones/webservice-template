@@ -2,14 +2,17 @@
   (:require [com.stuartsierra.component :as component]))
 
 (defrecord DB [counter]
-   component/Lifecycle
+  component/Lifecycle
 
-   (start [this]
-     (println "Starting DB component...")
-     (assoc this :counter (atom 0)))
+  (start [this]
+    (println "Starting DB component ...")
+    (assoc this :greetings (atom []) :counter (atom 0)))
 
-   (stop [this]
-     (assoc this :counter nil)))
+  (stop [this]
+    (assoc this :counter nil :greetings nil)))
 
 (defn inc-counter [db]
   (-> db (get :counter) (swap! inc)))
+
+(defn add-greeting [db greeting]
+  (-> db (get :greetings) (swap! conj greeting)))
