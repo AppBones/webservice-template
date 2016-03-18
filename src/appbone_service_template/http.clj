@@ -1,11 +1,9 @@
 (ns appbone-service-template.http
-  (:require [ring.middleware.params :refer [wrap-params]]
-            [io.sarnowski.swagger1st.core :as s1st]
-            [io.sarnowski.swagger1st.executor :as s1stexec]
+  (:require [io.sarnowski.swagger1st.core :as s1st]
             [com.stuartsierra.component :as component]
             [org.httpkit.server :refer [run-server]]
+            [appbone-service-template.util :refer :all]
             [appbone-service-template.middleware :refer :all]))
-
 
 (defrecord HTTP [server db spec port]
   component/Lifecycle
@@ -16,7 +14,7 @@
                                         ; for example the DB dependency of this component. You could also restructure the parameters alltogether or
                                         ; define your own dynamic mapping scheme.
     (let [resolver-fn (fn [request-definition]
-                        (if-let [cljfn (s1stexec/operationId-to-function request-definition)]
+                        (if-let [cljfn (opId-to-func request-definition)]
                           (fn [request]
                                         ; Here we are actually calling our clojure functions with the parameters map in the first
                                         ; argument and our DB dependency as the second argument.

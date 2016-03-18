@@ -14,8 +14,10 @@ paths:
         Returns a greeting message.
       tags:
         - Greeting
-      # Hint: here we reference the actual Clojure function to call when this request comes in
-      operationId: appbone-service-template.api/greeting
+      #Here we reference the actual Clojure function to call when this request comes in
+      #Only the portion before the * is read for the function name, allowing one fn to
+      #be mapped to by multiple operationIds
+      operationId: appbone-service-template.api/greeting*get
       produces:
         - application/json
       parameters:
@@ -42,3 +44,46 @@ paths:
                 example: "63"
         default:
           description: error
+
+    post:
+      summary: post a generate greeting
+      description: |
+        Returns a greeting message.
+      tags:
+        - Greeting
+      operationId: appbone-service-template.api/greeting*post
+      produces:
+        - application/json
+      parameters:
+        - name: greeting
+          in: body
+          type: string
+          schema:
+            $ref: '#/definitions/Greeting'
+          required: true
+      responses:
+        201:
+          description: success
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Hello Tobi!"
+              name:
+                type: string
+                example: "Tobi"
+              counter:
+                type: integer
+                example: "63"
+        default:
+          description: error
+
+definitions:
+  Greeting:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
