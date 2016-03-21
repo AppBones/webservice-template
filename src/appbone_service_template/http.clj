@@ -2,6 +2,8 @@
   (:require [io.sarnowski.swagger1st.core :as s1st]
             [com.stuartsierra.component :as component]
             [org.httpkit.server :refer [run-server]]
+            [liberator.dev :refer [wrap-trace]]
+            [environ.core :refer [env]]
             [appbone-service-template.util :refer :all]
             [appbone-service-template.middleware :refer :all]))
 
@@ -24,8 +26,10 @@
                       (s1st/discoverer)
                       (s1st/mapper)
                       (s1st/parser)
-                      (s1st/executor :resolver resolver-fn)
-                      (wrap-liberator-trace))]
+                      (s1st/executor :resolver resolver-fn))
+
+          handler (when (= "true" (env :is-dev))
+                    (wrap-trace handler :header :ui))]
 
       (assoc this :server (run-server handler {:join? false
                                                :port port}))))
