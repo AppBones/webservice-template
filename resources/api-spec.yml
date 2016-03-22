@@ -81,6 +81,26 @@ paths:
         default:
           description: error
 
+    options:
+      summary: get supported options on resource 
+      description: |
+        Returns the allowed HTTP verbs in the Allowed header, and a Swagger
+        definition of the Resource in the body.
+      tags:
+        - Greeting
+      operationId: appbone-service-template.api/greeting*options
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        201:
+          description: success
+          schema:
+            type: object
+        default:
+          description: error
+
 definitions:
   Greeting:
     type: object

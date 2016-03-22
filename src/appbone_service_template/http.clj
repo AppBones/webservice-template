@@ -4,8 +4,7 @@
             [org.httpkit.server :refer [run-server]]
             [liberator.dev :refer [wrap-trace]]
             [environ.core :refer [env]]
-            [appbone-service-template.util :refer :all]
-            [appbone-service-template.middleware :refer :all]))
+            [appbone-service-template.util :refer :all]))
 
 (defrecord HTTP [server db spec port]
   component/Lifecycle
