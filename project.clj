@@ -11,4 +11,4 @@
   :plugins [[lein-environ "1.0.2"]]
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[org.clojure/tools.namespace "0.2.10"]]
-                   :env {:is-dev true}}})
+                   :env {:is-dev "true"}}})
