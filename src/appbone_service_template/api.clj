@@ -2,6 +2,7 @@
   (:require [clojure.data.json :as json]
             [ring.util.response :as r]
             [liberator.core :refer [resource]]
+            [environ.core :refer [env]]
             [liberator.representation :refer [ring-response render-map-generic]]
             [appbone-service-template.db :as db]))
 
@@ -10,7 +11,9 @@
   exceptions goes here"
   [ctx]
   (let [e (:exception ctx)]
-    (print e "Liberator:" (.getClass e) "message:" (.getMessage e))))
+    (if (= "true" (env :is-dev))
+      (clojure.repl/pst e)
+      (print e "Liberator:" (.getClass e) "message:" (.getMessage e)))))
 
 (defn resource-def
   "Returns the Swagger specification for the given path"
@@ -31,7 +34,6 @@
 (defn describe-resource
   "Injects the Swagger specification for the given path into the response body"
   [ctx path]
-  (def example ctx)
   (let [res (resource-def ctx path)
         rep (get-in ctx [:request :headers "accept"])
         ctx (assoc ctx :representation {:media-type rep})
