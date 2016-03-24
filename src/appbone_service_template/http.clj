@@ -15,11 +15,12 @@
                                         ; for example the DB dependency of this component. You could also restructure the parameters alltogether or
                                         ; define your own dynamic mapping scheme.
     (let [resolver-fn (fn [request-definition]
-                        (if-let [cljfn (opId-to-func request-definition)]
+                        (if-let [cljfn (operationId->func request-definition)]
                           (fn [request]
+                            (let [path (extract-path request)]
                                         ; Here we are actually calling our clojure functions with the parameters map in the first
                                         ; argument and our DB dependency as the second argument.
-                            (cljfn request db))))
+                            (cljfn request db path)))))
 
           handler (-> (s1st/context :yaml-cp spec)
                       (s1st/discoverer)

@@ -15,16 +15,11 @@
       (clojure.repl/pst e)
       (print e "Liberator:" (.getClass e) "message:" (.getMessage e)))))
 
-(defn resource-def
-  "Returns the Swagger specification for the given path"
-  [ctx path]
-  (get-in ctx [:request :swagger :context :definition "paths" path]))
-
 (defn media-types
   "Returns the media-types available in a context given the path, based on the
   Swagger definition"
-  [ctx path]
-  (->> (resource-def ctx path)
+  [spec]
+  (->> spec
        (vals)
        (mapcat #(find % "produces"))
        (flatten)
@@ -33,11 +28,10 @@
 
 (defn describe-resource
   "Injects the Swagger specification for the given path into the response body"
-  [ctx path]
-  (let [res (resource-def ctx path)
-        rep (get-in ctx [:request :headers "accept"])
+  [ctx path spec]
+  (let [rep (get-in ctx [:request :headers "accept"])
         ctx (assoc ctx :representation {:media-type rep})
-        body (render-map-generic {path res} ctx)]
+        body (render-map-generic {path spec} ctx)]
     (ring-response {:body body})))
 
 (defn create-greeting
@@ -55,13 +49,14 @@
         id (db/inc-counter db)]
     (db/add-greeting db { :name name :message message :counter id })))
 
-(defn greeting [ctx db]
-  (let [handler
+(defn greeting [ctx db path]
+  (let [spec (get-in ctx [:swagger :context :definition "paths" path])
+        handler
         (resource
-         :allowed-methods [:post :get :options]
-         :available-media-types #(media-types % "/greeting")
+         :allowed-methods (map keyword (keys spec))
+         :available-media-types (media-types spec)
          :handle-created #(post-greeting % db)
          :handle-exception handle-exception
-         :handle-options #(describe-resource % "/greeting")
+         :handle-options #(describe-resource % path spec)
          :handle-ok #(create-greeting % db))]
     (handler ctx)))
