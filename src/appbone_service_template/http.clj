@@ -3,10 +3,9 @@
             [com.stuartsierra.component :as component]
             [org.httpkit.server :refer [run-server]]
             [liberator.dev :refer [wrap-trace]]
-            [environ.core :refer [env]]
             [appbone-service-template.util :refer :all]))
 
-(defrecord HTTP [server db spec port]
+(defrecord HTTP [server db spec port is-dev]
   component/Lifecycle
 
   (start [this]
@@ -28,7 +27,7 @@
                       (s1st/parser)
                       (s1st/executor :resolver resolver-fn))
 
-          handler (when (= "true" (env :is-dev))
+          handler (when is-dev
                     (wrap-trace handler :header :ui))]
 
       (assoc this :server (run-server handler {:join? false
