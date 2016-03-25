@@ -2,7 +2,7 @@
   (:require [clojure.data.json :as json]
             [ring.util.response :as r]
             [liberator.core :refer [resource]]
-            [environ.core :refer [env]]
+            [taoensso.timbre :as log]
             [liberator.representation :refer [ring-response render-map-generic]]
             [appbone-service-template.db :as db]))
 
@@ -11,9 +11,7 @@
   exceptions goes here"
   [ctx]
   (let [e (:exception ctx)]
-    (if (= "true" (env :is-dev))
-      (clojure.repl/pst e)
-      (print e "Liberator:" (.getClass e) "message:" (.getMessage e)))))
+    (log/error e)))
 
 (defn media-types
   "Returns the media-types available in a context given the path, based on the
