@@ -10,6 +10,8 @@
                  [com.stuartsierra/component "0.3.1"]
                  [com.taoensso/timbre "4.3.1"]]
   :plugins [[lein-environ "1.0.2"]]
-  :profiles {:dev {:source-paths ["dev"]
+  :profiles {:uberjar {:main appbone-service-template.core
+                       :aot :all}
+             :dev {:source-paths ["dev"]
                    :dependencies [[org.clojure/tools.namespace "0.2.10"]]
                    :env {:is-dev "true"}}})
