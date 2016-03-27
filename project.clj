@@ -10,6 +10,7 @@
                  [com.stuartsierra/component "0.3.1"]
                  [com.taoensso/timbre "4.3.1"]]
   :plugins [[lein-environ "1.0.2"]]
+  :min-lein-version "2.0.0"
   :profiles {:uberjar {:main appbone-service-template.core
                        :uberjar-name "template-service.jar"
                        :aot :all}

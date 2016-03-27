@@ -7,15 +7,15 @@
 
 (defn create-service [config-opts]
   "wires up the web service's dependency graph with provided configuration"
-  (let [{:keys [spec http-port is-dev?]} config-opts
-        is-dev? (if (nil? is-dev?) (= "true" (env :is-dev)) is-dev?)]
+  (let [{:keys [spec http-port is-dev]} config-opts
+        is-dev (if (nil? is-dev) (= "true" (env :is-dev)) is-dev)]
     (component/system-map
      :config-opts config-opts
      :db (db/map->DB {})
      :http (component/using
             (http/map->HTTP {:spec spec
                              :port http-port
-                             :is-dev is-dev?})
+                             :is-dev is-dev})
             [:db]))))
 
 (defn -main [& args]

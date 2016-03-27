@@ -19,7 +19,7 @@
                             (let [path (extract-path request)]
                                         ; Here we are actually calling our clojure functions with the parameters map in the first
                                         ; argument and our DB dependency as the second argument.
-                            (cljfn request db path)))))
+                              (cljfn request db path)))))
 
           handler (-> (s1st/context :yaml-cp spec)
                       (s1st/discoverer)
@@ -27,8 +27,9 @@
                       (s1st/parser)
                       (s1st/executor :resolver resolver-fn))
 
-          handler (when is-dev
-                    (wrap-trace handler :header :ui))]
+          handler (if is-dev
+                    (wrap-trace handler :header :ui)
+                    handler)]
 
       (assoc this :server (run-server handler {:join? false
                                                :port port}))))
