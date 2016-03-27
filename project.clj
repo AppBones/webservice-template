@@ -11,6 +11,7 @@
                  [com.taoensso/timbre "4.3.1"]]
   :plugins [[lein-environ "1.0.2"]]
   :profiles {:uberjar {:main appbone-service-template.core
+                       :uberjar-name "template-service.jar"
                        :aot :all}
              :dev {:source-paths ["dev"]
                    :dependencies [[org.clojure/tools.namespace "0.2.10"]]
