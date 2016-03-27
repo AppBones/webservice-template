@@ -20,8 +20,8 @@
 
 (defn -main [& args]
   "entry point for executing outside of a REPL"
-  (let [port (if (nil? (env :PORT)) 8080 (env :PORT))
+  (let [port (if (nil? (env :port)) "8080" (env :port))
         system (create-service {:spec "api-spec.yml"
-                                :http-port port
+                                :http-port (read-string port)
                                 :is-dev false})]
     (component/start system)))
