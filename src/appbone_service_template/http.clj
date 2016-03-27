@@ -10,15 +10,15 @@
 
   (start [this]
     (println "Starting HTTP component on port" port "...")
-                                        ; the resolver-fn is the magic where you can pass in whatever you want to the API implementing functions,
-                                        ; for example the DB dependency of this component. You could also restructure the parameters alltogether or
-                                        ; define your own dynamic mapping scheme.
+    ;; The resolver-fn is the magic where you can pass in whatever you want to
+    ;; the API implementing functions.
+    ;; For example, the DB dependency of this component. You could also
+    ;; restructure the parameters together or define your own mapping scheme.
     (let [resolver-fn (fn [request-definition]
                         (if-let [cljfn (operationId->func request-definition)]
                           (fn [request]
                             (let [path (extract-path request)]
-                                        ; Here we are actually calling our clojure functions with the parameters map in the first
-                                        ; argument and our DB dependency as the second argument.
+                              ;; Here we are actually calling our handler
                               (cljfn request db path)))))
 
           handler (-> (s1st/context :yaml-cp spec)
