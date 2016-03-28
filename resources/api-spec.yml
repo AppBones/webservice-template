@@ -19,7 +19,10 @@ paths:
       #be mapped to by multiple operationIds
       operationId: appbone-service-template.api/greeting*get
       produces:
+        - application/hal+json
+        - application/hal+xml
         - application/json
+        - application/xml
       parameters:
         - name: name
           in: query
@@ -54,8 +57,12 @@ paths:
       operationId: appbone-service-template.api/greeting*post
       consumes:
         - application/json
+        - application/xml
       produces:
+        - application/hal+json
+        - application/hal+xml
         - application/json
+        - application/xml
       parameters:
         - name: greeting
           in: body
@@ -89,8 +96,6 @@ paths:
       tags:
         - Greeting
       operationId: appbone-service-template.api/greeting*options
-      consumes:
-        - application/json
       produces:
         - application/json
       responses:
