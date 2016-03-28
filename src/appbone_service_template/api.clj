@@ -17,8 +17,11 @@
 (defn self-href
   "Constructs a default link to the current resource based on the request map."
   [context]
-  (str (name (:scheme context)) "://" (:server-name context) ":"
-        (:server-port context) (:uri context)))
+  (let [p (get-in context [:request :server-port])
+        port (if-not (or (= 80 p) (= 443 p)) p nil)
+        protocol (name (get-in context [:request :scheme]))
+        uri (get-in context [:request :uri])]
+    (str protocol "://" (get-in context [:request :server-name]) ":" port uri)))
 
 (defn media-types
   "Returns the media-types declared to be available in the Swagger definition
@@ -46,23 +49,30 @@
         message (str "Hello " name "!")]
     (assoc {:name name :message message} :counter (db/inc-counter db))))
 
-(defn post-greeting
+(defn post-greeting!
   "Post a greeting to the database."
   [ctx db]
   (let [name (get-in ctx [:request :parameters :body :greeting :name])
-        message (str "Hello" name "!")
-        id (db/inc-counter db)]
-    (db/add-greeting db { :name name :message message :counter id })))
+        msg (str "Hello " name "!")
+        id (db/inc-counter db)
+        body (last (db/add-greeting db {:name name :message msg :counter id}))
+        loc (str (self-href ctx) "/" id)]
+    (-> ctx
+        (assoc-in [:hal :href] loc)
+        (assoc :data body))))
 
 (defn greeting [ctx db path]
   (let [spec (get-in ctx [:swagger :context :definition "paths" path])
         handler
         (resource
-         :initialize-context {:hal (hal/new-resource (self-href ctx))}
+         :initialize-context {:hal (hal/new-resource (self-href {:request ctx}))}
          :allowed-methods (map keyword (keys spec))
          :available-media-types (media-types spec)
-         :handle-created #(post-greeting % db)
-         :handle-exception handle-exception
-         :handle-options #(describe-resource % path spec)
-         :handle-ok #(create-greeting % db))]
-    (handler ctx)))
+         :post! #(post-greeting! % db)
+         :post-redirect? false
+         :handle-created #(let [l (get-in % [:hal :href])]
+                            (ring-response (:data %) {:headers {"Location" l}}))
+        :handle-exception handle-exception
+        :handle-options #(describe-resource % path spec)
+        :handle-ok #(create-greeting % db))]
+  (handler ctx)))
