@@ -17,9 +17,9 @@
     (let [resolver-fn (fn [request-definition]
                         (if-let [cljfn (operationId->func request-definition)]
                           (fn [request]
-                            (let [path (extract-path request)]
+                            (let [spec (get-in request [:swagger :request])]
                               ;; Here we are actually calling our handler
-                              (cljfn request db path)))))
+                              (cljfn request db spec)))))
 
           handler (-> (s1st/context :yaml-cp spec)
                       (s1st/discoverer)

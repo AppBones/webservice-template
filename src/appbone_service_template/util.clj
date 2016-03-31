@@ -1,6 +1,5 @@
 (ns appbone-service-template.util
-  (:require [clojure.string :refer [replace-first]]
-            [io.sarnowski.swagger1st.executor :as s1stexec]
+  (:require [io.sarnowski.swagger1st.executor :as s1stexec]
             [clojure.string :as str]))
 
 
@@ -16,11 +15,3 @@
   [request-definition]
   (let [opId (get request-definition "operationId")]
     (s1stexec/function-by-name (first (str/split opId #"\*")))))
-
-(defn extract-path
-  "Given a request map containing the :swagger definition key, extract
-  the relative path of the resource requested"
-  [request]
-  (let [base (get-in request [:swagger :context :definition "basePath"])
-        path (:uri request)]
-    (replace-first path base "")))

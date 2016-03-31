@@ -23,22 +23,12 @@
         uri (get-in context [:request :uri])]
     (str protocol "://" (get-in context [:request :server-name]) ":" port uri)))
 
-(defn media-types
-  "Returns the media-types declared to be available in the Swagger definition
-  of a resource."
-  [spec]
-  (->> spec
-       (vals)
-       (mapcat #(find % "produces"))
-       (flatten)
-       (set)
-       (filterv #(not= "produces" %))))
-
 (defn describe-resource
   "Injects the Swagger specification for the given path into the response body."
-  [ctx path spec]
+  [ctx spec]
   (let [rep (get-in ctx [:request :headers "accept"])
         ctx (assoc ctx :representation {:media-type rep})
+        path (get-in ctx [:request :uri])
         body (render-map-generic {path spec} ctx)]
     (ring-response {:body body})))
 
@@ -61,18 +51,17 @@
         (assoc-in [:hal :href] loc)
         (assoc :data body))))
 
-(defn greeting [ctx db path]
-  (let [spec (get-in ctx [:swagger :context :definition "paths" path])
-        handler
+(defn greeting [ctx db spec]
+  (let [handler
         (resource
          :initialize-context {:hal (hal/new-resource (self-href {:request ctx}))}
-         :allowed-methods (map keyword (keys spec))
-         :available-media-types (media-types spec)
+         :allowed-methods [:get :post :options]
+         :available-media-types (get spec "produces")
          :post! #(post-greeting! % db)
          :post-redirect? false
          :handle-created #(let [l (get-in % [:hal :href])]
                             (ring-response (:data %) {:headers {"Location" l}}))
-        :handle-exception handle-exception
-        :handle-options #(describe-resource % path spec)
-        :handle-ok #(create-greeting % db))]
-  (handler ctx)))
+         :handle-exception handle-exception
+         :handle-options #(describe-resource % spec)
+         :handle-ok #(create-greeting % db))]
+    (handler ctx)))
