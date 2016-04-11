@@ -9,7 +9,8 @@
             [clojure.string :as str]
             [clojure.test :as test]
             [clojure.tools.namespace.repl :refer [refresh refresh-all]]
-            [com.stuartsierra.component :as component]))
+            [com.stuartsierra.component :as component]
+            [midje.repl :refer :all]))
 
 (def system nil)
 

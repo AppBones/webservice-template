@@ -14,9 +14,12 @@
                  [clj-time "0.11.0"]]
   :plugins [[lein-environ "1.0.2"]]
   :min-lein-version "2.0.0"
+  :test-paths ["test"]
   :profiles {:uberjar {:main appbone-service-template.core
                        :uberjar-name "template-service.jar"
                        :aot :all}
              :dev {:source-paths ["dev"]
-                   :dependencies [[org.clojure/tools.namespace "0.2.10"]]
+                   :dependencies [[org.clojure/tools.namespace "0.2.10"]
+                                  [ring/ring-mock "0.3.0"]
+                                  [midje "1.8.3"]]
                    :env {:is-dev "true"}}})
