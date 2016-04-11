@@ -9,12 +9,11 @@
                  [halresource "0.2.0-SNAPSHOT"]
                  [http-kit "2.1.19"]
                  [io.sarnowski/swagger1st "0.21.0"]
-                 [liberator "0.14.0"]
+                 [liberator "0.14.1"]
                  [ring "1.4.0"]
                  [clj-time "0.11.0"]]
   :plugins [[lein-environ "1.0.2"]]
   :min-lein-version "2.0.0"
-  :test-paths ["test"]
   :profiles {:uberjar {:main appbone-service-template.core
                        :uberjar-name "template-service.jar"
                        :aot :all}
