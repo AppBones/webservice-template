@@ -25,10 +25,9 @@
 
 (defn describe-resource
   "Injects the Swagger specification for the given path into the response body."
-  [ctx spec]
-  (let [rep (get-in ctx [:request :headers "accept"])
-        ctx (assoc ctx :representation {:media-type rep})
-        path (get-in ctx [:request :uri])
+  [ctx path]
+  (let [ctx (assoc ctx :representation {:media-type "application/json"})
+        spec (get-in ctx [:swagger :context :definition "paths" path])
         body (render-map-generic {path spec} ctx)]
     (ring-response {:body body})))
 
@@ -62,6 +61,6 @@
          :handle-created #(let [l (get-in % [:hal :href])]
                             (ring-response (:data %) {:headers {"Location" l}}))
          :handle-exception handle-exception
-         :handle-options #(describe-resource % spec)
+         :handle-options (describe-resource ctx "/greeting")
          :handle-ok #(create-greeting % db))]
     (handler ctx)))
