@@ -28,7 +28,7 @@
   [ctx path]
   (let [ctx (assoc ctx :representation {:media-type "application/json"})
         spec (get-in ctx [:swagger :context :definition "paths" path])
-        body (render-map-generic {path spec} ctx)]
+        body (render-map-generic {(keyword path) spec} ctx)]
     (ring-response {:body body})))
 
 (defn create-greeting

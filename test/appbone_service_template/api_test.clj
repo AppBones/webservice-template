@@ -55,11 +55,14 @@
                   }
          ))
 
-(let [request (mock/request :options "http://localhost:3000/api/greeting")
+(let [request (-> (mock/request :options "http://localhost:3000/api/greeting")
+                  (assoc-in [:swagger :context] swagger))
       spec (get-in definition ["options"])
-      response (handler request db spec)]
+      response (handler request db spec)
+      body (:body response)]
 
   (facts "about OPTIONS"
          response => (contains {:status 200})
          response => (contains {:headers {"Allow" "GET, POST, OPTIONS"}})
+         body => (json/write-str {:greeting definition})
          ))
